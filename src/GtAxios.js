@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import  img1 from './assts/icon.png';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 function GtAxios() {
@@ -9,16 +10,23 @@ function GtAxios() {
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage =6;
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState (false);
+
   useEffect(() => {
+    setLoading(true)
     axios.get('https://api.coinranking.com/v2/coins')
       .then(res => {
         setCoins(res?.data?.data?.coins)
         console.log(res?.data?.data?.coins)
         console.log(coins)
+        setLoading(false)    
       })
       .catch(err => {
         console.log(err)
       })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [])
 // Filter the coins based on the search term
 const filteredCoins = coins.filter(val => {
@@ -41,7 +49,10 @@ const filteredCoins = coins.filter(val => {
     <div  style={{ backgroundColor: '#9db2bf', height:649}}>
     
       <div className='searchbar' type="search"><h1 className='App' >List of Coins</h1>
+       <div>
       
+
+       </div>
       <form  className='form'>
         <input style={{width:400}} placeholder="Search for digital coins " 
         onChange={event => {
@@ -54,13 +65,13 @@ const filteredCoins = coins.filter(val => {
     
       <div className='container'>
         {
-          records.filter((val) => {
+           records.filter((val) => {
             if (searchTerm == ""){
               return val
             }else if (val.name.toLowerCase().includes(searchTerm.toLowerCase())){
               return val
             }
-          }).map(coin => <ul key={coin.name}>
+          }) .map(coin => <ul key={coin.name}>
            
           <div className='Card'>
             
@@ -80,6 +91,16 @@ const filteredCoins = coins.filter(val => {
         
         }   
         
+        
+        <div className='loader'>
+        <ClipLoader
+        color={'blue'}
+        loading={loading}
+        size={100}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      /> 
+        </div>
        
       </div>
       <div class="fixed-bottom">
@@ -110,7 +131,10 @@ Next
 </a>
   </li>
   </ul>
-</nav></div>
+</nav>
+
+
+</div>
     </div>
     </div>
   )
